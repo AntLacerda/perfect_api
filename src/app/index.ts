@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import limiter from '@src/middlewares/rateLimit';
+import limiter from '../middlewares/rateLimit';
 
 const app = express();
 
