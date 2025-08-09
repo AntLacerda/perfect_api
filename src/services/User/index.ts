@@ -215,7 +215,6 @@ const updateUser = async (userId: string, userData: UpdateUserDTO) => {
         const updateData: any = {
             ...(nameNormalized && { name: nameNormalized }),
             ...(emailNormalized && { email: emailNormalized }),
-            ...(userData.password && { password: await createHashPassword(userData.password) })
         }
 
         const userResponse = await tx.user.update({
@@ -241,6 +240,92 @@ const updateUser = async (userId: string, userData: UpdateUserDTO) => {
     })
 }
 
+const changeUserPassword = async (userId: string, password: string) => {
+    return await prisma.$transaction(async (tx) => {
+        const existingUser = await tx.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+        if (!existingUser) {
+            throw new AppError("User not found", 404, "USER_NOT_FOUND");
+        }
+
+        const hashedPassword = await createHashPassword(password);
+
+        const userResponse = await tx.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                password: hashedPassword
+            },
+            select: {
+                name: true,
+                email: true,
+                Permission: {
+                    select: {
+                        role: true,
+                    }
+                }
+            }
+        });
+
+        return {
+            message: "User password updated successfully",
+            data: userResponse
+        };
+    });
+}
+
+const updateUserRole = async (userId: string, newRoleId: string) => {
+    return await prisma.$transaction(async (tx) => {
+        const existingUser = await tx.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+        if (!existingUser) {
+            throw new AppError("User not found", 404, "USER_NOT_FOUND");
+        }
+
+        const existingRole = await tx.permission.findUnique({
+            where: {
+                id: newRoleId
+            }
+        });
+
+        if (!existingRole) {
+            throw new AppError("Role not found", 404, "ROLE_NOT_FOUND");
+        }
+
+        const userResponse = await tx.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                permission_id: newRoleId,
+            },
+            select: {
+                name: true,
+                email: true,
+                Permission: {
+                    select: {
+                        role: true,
+                    }
+                }
+            }
+        });
+
+        return ({
+            message: "User role updated successfully",
+            data: userResponse
+        })
+    })
+}
+
 const removeUser = async (userId: string) => {
     return await prisma.$transaction(async (tx) => {
         const existingUser = await tx.user.findUnique({
@@ -263,6 +348,17 @@ const removeUser = async (userId: string) => {
             message: "User removed successfully"
         };
     });
+}
+
+export const UserService = {
+    createAdminUser,
+    createRegularUser,
+    readAllUsers,
+    readUser,
+    updateUser,
+    changeUserPassword,
+    updateUserRole,
+    removeUser,
 }
 
     

@@ -11,7 +11,11 @@ export interface UpdateUserDTO {
     id: string;
     name?: string;
     email?: string;
-    password?: string;
+}
+
+export interface UpdateUserPasswordDTO {
+    id: string;
+    password: string;
 }
 
 export interface RegularUserDTO extends UserDTO {}
