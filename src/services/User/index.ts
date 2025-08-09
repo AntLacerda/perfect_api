@@ -1,4 +1,5 @@
 import { createHashPassword, compareHashWithPassword } from "@src/utils/bcrypt";
+import User from "@src/models/User";
 import { AppError } from "@src/errors/AppError";
 import { RegularUserDTO, AdminUserDTO } from "@src/dtos/User";
 import { prisma } from "@src/database";
@@ -109,6 +110,53 @@ const createRegularUser = async (userData: RegularUserDTO) => {
                 data: userResponse
             };
     });
+}
+
+const readAllUsers = async (skip: number, take: number, filters?: { name?: string; role?: string; }) => {
+    const where: any = {
+        ...(filters?.name && {
+            name: {
+                contains: filters.name,
+                mode: "insensitive"
+            }
+        }),
+        ...(filters?.role && {
+            Permission: {
+                role: filters.role
+            }
+        })
+    };
+    
+    const [users, total] = await prisma.$transaction([
+        User.findMany({
+            skip,
+            take,
+            where,
+            select: {
+                name: true,
+                email: true,
+                Permission: {
+                    select: {
+                        role: true,
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: "desc"
+            }
+        }),
+        User.count({
+            where
+        })
+    ]);
+
+    const totalPages = Math.ceil(total / take);
+
+    return {
+        total,
+        totalPages,
+        users: users,
+    };
 }
 
     
