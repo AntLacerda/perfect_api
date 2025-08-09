@@ -1,7 +1,7 @@
 import { createHashPassword, compareHashWithPassword } from "@src/utils/bcrypt";
 import User from "@src/models/User";
 import { AppError } from "@src/errors/AppError";
-import { RegularUserDTO, AdminUserDTO } from "@src/dtos/User";
+import { RegularUserDTO, AdminUserDTO, UpdateUserDTO } from "@src/dtos/User";
 import { prisma } from "@src/database";
 
 const createAdminUser = async (userData: AdminUserDTO) => {
@@ -157,6 +157,62 @@ const readAllUsers = async (skip: number, take: number, filters?: { name?: strin
         totalPages,
         users: users,
     };
+}
+
+const updateUser = async (userId: string, userData: UpdateUserDTO) => {
+    return await prisma.$transaction(async (tx) => {
+        const existingUser = await tx.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+        if (!existingUser) {
+            throw new AppError("User not found", 404, "USER_NOT_FOUND");
+        }
+
+        const emailNormalized = userData.email ? userData.email.toLowerCase().trim() : existingUser.email;
+        const nameNormalized = userData.name ? userData.name.trim() : existingUser.name;
+
+        if(emailNormalized) {
+            const emailInUse = await tx.user.findUnique({
+                where: {
+                    email: emailNormalized
+                }
+            });
+
+            if (emailInUse && emailInUse.id !== userId) {
+                throw new AppError("Email already in use", 409, "EMAIL_ALREADY_IN_USE");
+            }
+        }
+
+        const updateData: any = {
+            ...(nameNormalized && { name: nameNormalized }),
+            ...(emailNormalized && { email: emailNormalized }),
+            ...(userData.password && { password: await createHashPassword(userData.password) })
+        }
+
+        const userResponse = await tx.user.update({
+            where: {
+                id: userId
+            },
+            data: updateData,
+            select: {
+                name: true,
+                email: true,
+                Permission: {
+                    select: {
+                        role: true,
+                    }
+                }
+            }
+        });
+
+        return {
+            message: "User updated successfully",
+            data: userResponse
+        };
+    })
 }
 
     
