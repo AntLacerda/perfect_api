@@ -159,6 +159,32 @@ const readAllUsers = async (skip: number, take: number, filters?: { name?: strin
     };
 }
 
+const readUser = async (userId: string) => {
+    const foundedUser = await prisma.user.findUnique({
+        where: {
+            id: userId
+        },
+        select: {
+            name: true,
+            email: true,
+            Permission: {
+                select: {
+                    role: true,
+                }
+            }
+        }
+    });
+
+    if (!foundedUser) {
+        throw new AppError("User not found", 404, "USER_NOT_FOUND");
+    }
+
+    return {
+        message: "User found successfully",
+        data: foundedUser
+    };
+}
+
 const updateUser = async (userId: string, userData: UpdateUserDTO) => {
     return await prisma.$transaction(async (tx) => {
         const existingUser = await tx.user.findUnique({
@@ -213,6 +239,30 @@ const updateUser = async (userId: string, userData: UpdateUserDTO) => {
             data: userResponse
         };
     })
+}
+
+const removeUser = async (userId: string) => {
+    return await prisma.$transaction(async (tx) => {
+        const existingUser = await tx.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+        if (!existingUser) {
+            throw new AppError("User not found", 404, "USER_NOT_FOUND");
+        }
+
+        await tx.user.delete({
+            where: {
+                id: userId
+            }
+        });
+
+        return {
+            message: "User removed successfully"
+        };
+    });
 }
 
     
