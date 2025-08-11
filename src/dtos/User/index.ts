@@ -21,5 +21,5 @@ export interface UpdateUserPasswordDTO {
 export interface RegularUserDTO extends UserDTO {}
 
 export interface AdminUserDTO extends UserDTO {
-    role: PermissionRoles;
+    role?: PermissionRoles;
 }
