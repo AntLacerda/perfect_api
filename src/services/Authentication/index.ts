@@ -56,3 +56,57 @@ const signUp = async (newUser: RegularUserDTO) => {
         return userResponse;
     });
 }
+
+const login = async (email: string, password: string) => {
+    const user = await User.findUnique({
+        where: {
+            email
+        },
+        select: {
+            id: true,
+            password: true,
+            Permission: {
+                select: {
+                    role: true,
+                }
+            }
+        }
+    });
+
+    if (!user) {
+        throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
+    }
+
+    const isPasswordValid = await compareHashWithPassword(password, user.password);
+    if (!isPasswordValid) {
+        throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
+    }
+
+    const jwtSecret = process.env.JWT_SECRET_KEY;
+    if (!jwtSecret) {
+        throw new Error("JWT secret key is not defined");
+    }
+
+    const token = sign(
+        {
+            id: user.id,
+            role: user.Permission.role,
+        },
+        jwtSecret,
+        {
+            expiresIn: "1d",
+            issuer: "perfect_api",
+            audience: "perfect_api_users",
+        }
+    );
+
+    return {
+        userId: user.id,
+        token,
+    }
+}
+
+export default {
+    signUp,
+    login,
+};
