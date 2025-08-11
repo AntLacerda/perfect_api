@@ -57,3 +57,43 @@ const createRegularUser = async (req: Request, res: Response): Promise<Response>
         });
     }
 }
+
+const readAllUsers = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const page = Math.max(Number(req.query.page) || 1, 1);
+        const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
+        const skip = (page - 1) * limit;
+
+        const filters = {
+            name: req.query.name ? String(req.query.name).toLowerCase().trim() : undefined,
+            role: req.query.role ? String(req.query.role).toLowerCase().trim() : undefined,
+        }
+
+        const result = await UserService.readAllUsers(skip, limit, filters);
+
+        return res.status(200).json({
+            success: true,
+            message: "Users read successfully",
+            pagination: {
+                total: result.total,
+                totalPages: result.totalPages,
+                currentPage: page,
+                limit: limit,
+            },
+            data: result.users
+        });
+    } catch (error) {
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({ 
+                success: false,
+                message: error.message 
+            });
+        }
+
+        console.error("Error reading all users:", error);
+        return res.status(500).json({ 
+            success: false,
+            message: "Internal server error" 
+        });        
+    }
+}
