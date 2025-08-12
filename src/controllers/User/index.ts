@@ -97,3 +97,37 @@ const readAllUsers = async (req: Request, res: Response): Promise<Response> => {
         });        
     }
 }
+
+const readUser = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "User ID is required" 
+            });
+        }
+
+        const result = await UserService.readUser(id);
+
+        return res.status(200).json({
+            success: true,
+            ...result
+        });
+        
+    } catch (error) {
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({ 
+                success: false,
+                message: error.message 
+            });
+        }
+
+        console.error("Error reading user:", error);
+        return res.status(500).json({ 
+            success: false,
+            message: "Internal server error" 
+        });
+    }
+}
