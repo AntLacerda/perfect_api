@@ -4,6 +4,7 @@ import limiter from '../middlewares/rateLimit';
 import { errorHandler } from '@src/middlewares/errorHandler';
 
 import { UserRouter } from '@src/routers/User';
+import { AuthRouter } from '@src/routers/Authentication';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get(`${basePathUrlApiV1}/hello-world`, (req: Request, res: Response) => {
     return;
 });
 
+app.use(`/auth`, AuthRouter);
 app.use(`${basePathUrlApiV1}/users`, UserRouter);
 
 app.use(errorHandler);
