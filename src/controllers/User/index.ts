@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { RegularUserDTO, AdminUserDTO } from "@src/dtos/User";
+import { RegularUserDTO, AdminUserDTO, UpdateUserDTO } from "@src/dtos/User";
 import { UserService } from "@src/services/User";
 import { AppError } from "@src/errors/AppError";
 
@@ -125,6 +125,41 @@ const readUser = async (req: Request, res: Response): Promise<Response> => {
         }
 
         console.error("Error reading user:", error);
+        return res.status(500).json({ 
+            success: false,
+            message: "Internal server error" 
+        });
+    }
+}
+
+const updateUser = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { id } = req.params;
+        const updatedUser = req.body as UpdateUserDTO;
+
+        if (!id) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "User ID is required" 
+            });
+        }
+
+        const result = await UserService.updateUser(id, updatedUser);
+
+        return res.status(200).json({
+            success: true,
+            ...result
+        });
+        
+    } catch (error) {
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({ 
+                success: false,
+                message: error.message 
+            });
+        }
+
+        console.error("Error updating user:", error);
         return res.status(500).json({ 
             success: false,
             message: "Internal server error" 
