@@ -277,3 +277,14 @@ const removeUser = async (req: Request, res: Response): Promise<Response> => {
     }
 }
 
+export const UserController = {
+    createAdminUser,
+    createRegularUser,
+    readAllUsers,
+    readUser,
+    updateUser,
+    changeSelfPassword,
+    updateUserRole,
+    removeUser,
+}
+
