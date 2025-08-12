@@ -202,3 +202,44 @@ const changeSelfPassword = async (req: Request, res: Response): Promise<Response
     }
 }
 
+const updateUserRole = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { id } = req.params;
+        const { roleId } = req.body;
+
+        if (!id) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "User ID is required" 
+            });
+        }
+        if (!roleId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Role ID is required" 
+            });
+        }
+
+        const result = await UserService.updateUserRole(id, roleId);
+
+        return res.status(200).json({
+            success: true,
+            ...result
+        });
+        
+    } catch (error) {
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({ 
+                success: false,
+                message: error.message 
+            });
+        }
+
+        console.error("Error updating user role:", error);
+        return res.status(500).json({ 
+            success: false,
+            message: "Internal server error" 
+        });
+    }
+}
+
