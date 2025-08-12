@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { AppError } from "@src/errors/AppError";
+import { AppError } from "../errors/AppError";
 
 const SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10;
 

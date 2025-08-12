@@ -1,3 +1,3 @@
-import { prisma } from "@src/database";
+import { prisma } from "../../database";
 
 export default prisma.user;

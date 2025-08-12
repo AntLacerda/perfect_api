@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import User from "@src/models/User";
+import User from "../models/User";
 import { AppError } from "../errors/AppError";
 
 const UNAUTHORIZED_MESSAGE = "You don't have permission to access this resource!";

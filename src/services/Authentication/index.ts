@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { sign } from "jsonwebtoken";
-import { compareHashWithPassword, createHashPassword } from "@src/utils/bcrypt";
-import { RegularUserDTO } from "@src/dtos/User";
-import User from "@src/models/User";
-import Permission from "@src/models/Permission";
-import { AppError } from "@src/errors/AppError";
+import { compareHashWithPassword, createHashPassword } from "../../utils/bcrypt";
+import { RegularUserDTO } from "../../dtos/User";
+import User from "../../models/User";
+import Permission from "../../models/Permission";
+import { AppError } from "../../errors/AppError";
 
 const prisma = new PrismaClient();
 

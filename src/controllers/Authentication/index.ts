@@ -1,7 +1,7 @@
-import { AuthService } from "@src/services/Authentication";
+import { AuthService } from "../../services/Authentication";
 import { Request, Response } from "express";
-import { RegularUserDTO } from "@src/dtos/User";
-import { AppError } from "@src/errors/AppError";
+import { RegularUserDTO } from "../../dtos/User";
+import { AppError } from "../../errors/AppError";
 
 const signUp = async (req: Request, res: Response): Promise<Response> => {
     try {

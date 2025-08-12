@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { RegularUserDTO, AdminUserDTO, UpdateUserDTO } from "@src/dtos/User";
-import { UserService } from "@src/services/User";
-import { AppError } from "@src/errors/AppError";
+import { RegularUserDTO, AdminUserDTO, UpdateUserDTO } from "../../dtos/User";
+import { UserService } from "../../services/User";
+import { AppError } from "../../errors/AppError";
 
 const createAdminUser = async (req: Request, res: Response): Promise<Response> => {
     try {

@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import limiter from '../middlewares/rateLimit';
-import { errorHandler } from '@src/middlewares/errorHandler';
+import { errorHandler } from '../middlewares/errorHandler';
 
-import { UserRouter } from '@src/routers/User';
-import { AuthRouter } from '@src/routers/Authentication';
+import { UserRouter } from '../routers/User';
+import { AuthRouter } from '../routers/Authentication';
 
 const app = express();
 

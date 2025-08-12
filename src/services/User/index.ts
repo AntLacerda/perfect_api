@@ -1,8 +1,8 @@
-import { createHashPassword, compareHashWithPassword } from "@src/utils/bcrypt";
-import User from "@src/models/User";
-import { AppError } from "@src/errors/AppError";
-import { RegularUserDTO, AdminUserDTO, UpdateUserDTO } from "@src/dtos/User";
-import { prisma } from "@src/database";
+import { createHashPassword, compareHashWithPassword } from "../../utils/bcrypt";
+import User from "../../models/User";
+import { AppError } from "../../errors/AppError";
+import { RegularUserDTO, AdminUserDTO, UpdateUserDTO } from "../../dtos/User";
+import { prisma } from "../../database";
 
 const createAdminUser = async (userData: AdminUserDTO) => {
     const { name, email, password } = userData;
