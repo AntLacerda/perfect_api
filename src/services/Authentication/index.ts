@@ -106,7 +106,7 @@ const login = async (email: string, password: string) => {
     }
 }
 
-export default {
+export const AuthService = {
     signUp,
     login,
 };
