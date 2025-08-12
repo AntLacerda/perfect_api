@@ -166,3 +166,39 @@ const updateUser = async (req: Request, res: Response): Promise<Response> => {
         });
     }
 }
+
+const changeSelfPassword = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const userId = req.userId as string;
+        const { password } = req.body;
+
+        if (!password) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Password is required" 
+            });
+        }
+
+        const result = await UserService.changeSelfPassword(userId, password);
+
+        return res.status(200).json({
+            success: true,
+            ...result
+        });
+        
+    } catch (error) {
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({ 
+                success: false,
+                message: error.message 
+            });
+        }
+
+        console.error("Error changing user password:", error);
+        return res.status(500).json({ 
+            success: false,
+            message: "Internal server error" 
+        });
+    }
+}
+

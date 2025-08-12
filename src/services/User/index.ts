@@ -240,7 +240,7 @@ const updateUser = async (userId: string, userData: UpdateUserDTO) => {
     })
 }
 
-const changeUserPassword = async (userId: string, password: string) => {
+const changeSelfPassword = async (userId: string, password: string) => {
     return await prisma.$transaction(async (tx) => {
         const existingUser = await tx.user.findUnique({
             where: {
@@ -356,7 +356,7 @@ export const UserService = {
     readAllUsers,
     readUser,
     updateUser,
-    changeUserPassword,
+    changeSelfPassword,
     updateUserRole,
     removeUser,
 }
